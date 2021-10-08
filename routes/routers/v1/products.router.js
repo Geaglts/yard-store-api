@@ -1,4 +1,4 @@
-const {Router} = require('express')
+const { Router } = require('express')
 const faker = require('faker')
 
 const router = Router();
@@ -14,6 +14,14 @@ router.get('/', (req, res) => {
     })
   }
   res.json({ products })
+})
+
+router.post('/', (req, res) => {
+  const { body } = req;
+  res.json({
+    message: 'created',
+    data: body
+  })
 })
 
 module.exports = router;

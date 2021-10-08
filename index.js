@@ -3,6 +3,8 @@ const app = express();
 const routerApi = require('./routes')
 const PORT = 3000;
 
+app.use(express.json())
+
 app.get('/', (req, res) => {
     res.send('Server andando.');
 })
