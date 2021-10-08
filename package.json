@@ -1,0 +1,23 @@
+{
+  "name": "yard-sale-api",
+  "version": "0.1.0",
+  "description": "Yard sale API",
+  "main": "index.js",
+  "author": "Miguel Angel Toledo Santiago",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "nodemon": "^2.0.13",
+    "prettier": "^2.4.1"
+  }
+}
