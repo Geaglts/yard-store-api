@@ -1,11 +1,15 @@
 const { Router } = require('express');
+const UsersService = require('../../../services/users.service');
 const response = require('../../../utils/response');
 
 const router = Router();
+const service = new UsersService();
 
 router.post('/register', async (req, res, next) => {
   try {
-    response(res);
+    const user = req.body;
+    const data = await service.register({ user });
+    response({ res, ...data });
   } catch (error) {
     next(error);
   }
@@ -13,7 +17,8 @@ router.post('/register', async (req, res, next) => {
 
 router.post('/login', async (req, res, next) => {
   try {
-    response(res);
+    const data = await service.login();
+    response({ res, ...data });
   } catch (error) {
     next(error);
   }
