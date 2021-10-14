@@ -11,8 +11,9 @@ function errorHandler(err, req, res, next) {
 }
 
 function boomErrorHandler(err, req, res, next) {
-	if (err.isBoom) {
-		res.status(err.statusCode).json(err.payload);
+	const { isBoom, output } = err;
+	if (isBoom) {
+		res.status(output.statusCode).json(output.payload);
 	}
 	next(err);
 }
