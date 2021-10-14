@@ -1,20 +1,24 @@
 const express = require('express');
 const app = express();
-const routerApi = require('./routes')
+const routerApi = require('./routes');
 const PORT = 3000;
+const { errorHandler, errorLog } = require('./middlewares/error.handler');
 
-app.use(express.json())
+app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.send('Server andando.');
-})
+  res.send('Server andando.');
+});
 
 routerApi(app);
 
 app.use('*', (req, res) => {
-  res.status(404).json({message: 'Not Found', status: 404})
+  res.status(404).json({ message: 'Not Found', status: 404 });
 });
 
+app.use(errorLog);
+app.use(errorHandler);
+
 app.listen(PORT, () => {
-    console.log(`Escuchando en el puerto ${PORT}`)
+  console.log(`Escuchando en el puerto ${PORT}`);
 });
