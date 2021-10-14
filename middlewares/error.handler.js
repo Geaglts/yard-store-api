@@ -6,8 +6,15 @@ function errorLog(err, req, res, next) {
 function errorHandler(err, req, res, next) {
   res.status(500).json({
     message: err.message,
-    stack: err.stack,
+    error: err.stack,
   });
 }
 
-module.exports = { errorLog, errorHandler };
+function boomErrorHandler(err, req, res, next) {
+  if (err.isBoom) {
+    res.status(err.statusCode).json(err.payload);
+  }
+  next(err);
+}
+
+module.exports = { errorLog, errorHandler, boomErrorHandler };
