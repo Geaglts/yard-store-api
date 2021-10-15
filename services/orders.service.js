@@ -1,3 +1,5 @@
+const getConnection = require('../lib/postgres');
+
 class OrdersService {
 	constructor() {
 		this.orders = [];
@@ -6,7 +8,9 @@ class OrdersService {
 		return true;
 	}
 	async find() {
-		return true;
+		const client = await getConnection();
+		const data = await client.query('SELECT * FROM public.dummy;');
+		return data.rows;
 	}
 	async findOne(id) {
 		return true;

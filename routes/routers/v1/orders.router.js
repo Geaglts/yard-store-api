@@ -1,12 +1,15 @@
 const { Router } = require('express');
+const OrdersService = require('../../../services/orders.service');
 
 const reponse = require('../../../utils/response');
 
 const router = Router();
+const service = new OrdersService();
 
 router.get('/', async (req, res, next) => {
 	try {
-		reponse({ res, body: [] });
+		const data = await service.find();
+		reponse({ res, body: data });
 	} catch (error) {
 		next(error);
 	}
