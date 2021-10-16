@@ -5,6 +5,15 @@ const response = require('../../../utils/response');
 const router = Router();
 const service = new UsersService();
 
+router.get('/', async (req, res, next) => {
+	try {
+		const data = await service.find();
+		response({ res, message: 'all users', body: data });
+	} catch (error) {
+		next(error);
+	}
+});
+
 router.post('/register', async (req, res, next) => {
 	try {
 		const user = req.body;
