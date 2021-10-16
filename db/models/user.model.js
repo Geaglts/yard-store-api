@@ -33,7 +33,7 @@ class User extends Model {
 		return {
 			sequelize,
 			tableName: USER_TABLE,
-			modelName: UserSchema,
+			modelName: 'User',
 			timestamps: false,
 		};
 	}
