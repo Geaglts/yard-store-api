@@ -1,11 +1,11 @@
 const { Router } = require('express');
-const ProductsService = require('../../../services/products.service');
-const validationHandler = require('../../../middlewares/validation.handler');
+const ProductsService = require('../../services/products.service');
+const validationHandler = require('../../middlewares/validation.handler');
 const {
 	getProductSchema,
 	updateProductSchema,
 	createProductSchema,
-} = require('../../../schemas/product.schema');
+} = require('../../schemas/product.schema');
 
 const router = Router();
 const service = new ProductsService();
