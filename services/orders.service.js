@@ -1,19 +1,16 @@
-const pool = require('../lib/postgres.pool');
+const sequelize = require('../lib/sequelize');
 
 class OrdersService {
 	constructor() {
 		this.orders = [];
-		this.pool = pool;
-		this.pool.on('error', (err) => {
-			console.log(err);
-		});
 	}
 	async create(orders) {
 		return true;
 	}
 	async find() {
-		const data = await this.pool.query('SELECT * FROM public.dummy;');
-		return data.rows;
+		const query = 'SELECT * FROM public.dummy;';
+		const [data] = await sequelize.query(query);
+		return data;
 	}
 	async findOne(id) {
 		return true;
