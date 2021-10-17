@@ -5,9 +5,12 @@ const { Category, CategorySchema } = require('./category.model');
 
 function setupModels(sequelize) {
 	User.init(UserSchema, User.config(sequelize));
-	User.init(CustomerSchema, Customer.config(sequelize));
-	User.init(ProductSchema, Product.config(sequelize));
-	User.init(CategorySchema, Category.config(sequelize));
+	Customer.init(CustomerSchema, Customer.config(sequelize));
+	Product.init(ProductSchema, Product.config(sequelize));
+	Category.init(CategorySchema, Category.config(sequelize));
+
+	User.associate(sequelize.models);
+	Customer.associate(sequelize.models);
 }
 
 module.exports = setupModels;

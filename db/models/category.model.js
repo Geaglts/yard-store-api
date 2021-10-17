@@ -28,6 +28,7 @@ const CategorySchema = {
 
 class Category extends Model {
 	static associate() {}
+
 	static config(sequelize) {
 		return {
 			sequelize,

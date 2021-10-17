@@ -4,14 +4,15 @@ const { models } = require('../lib/sequelize');
 class CustomersService {
 	constructor() {}
 	async create({ customer }) {
-		return true;
+		const newCustomer = await models.Customer.create(customer, { include: ['user'] });
+		return { message: 'user added', body: newCustomer };
 	}
 	async find() {
 		const customers = await models.Customer.findAll();
 		return { message: 'customers', body: customers };
 	}
 	async findOne({ id }) {
-		const customer = await models.Customer.findByPk(id);
+		const customer = await models.Customer.findByPk(id, { include: ['user'] });
 		if (!customer) throw boom.notFound('customer not found');
 		return { message: 'customer', body: customer };
 	}
