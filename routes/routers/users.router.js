@@ -3,7 +3,11 @@ const UsersService = require('../../services/users.service');
 const response = require('../../utils/response');
 
 const validationHandler = require('../../middlewares/validation.handler');
-const { createUserSchema, getUserSchema } = require('../../schemas/user.schema');
+const {
+	createUserSchema,
+	updateUserSchema,
+	getUserSchema,
+} = require('../../schemas/user.schema');
 
 const router = Router();
 const service = new UsersService();
@@ -21,7 +25,7 @@ router.post('/register', validationHandler(createUserSchema), async (req, res, n
 	try {
 		const user = req.body;
 		const data = await service.register({ user });
-		response({ res, ...data });
+		response({ res, ...data, status: 201 });
 	} catch (error) {
 		next(error);
 	}
@@ -45,6 +49,21 @@ router.get('/:id', validationHandler(getUserSchema, 'params'), async (req, res, 
 		next(error);
 	}
 });
+
+router.patch(
+	'/:id',
+	validationHandler(getUserSchema, 'params'),
+	validationHandler(updateUserSchema),
+	async (req, res, next) => {
+		const { id } = req.params;
+		try {
+			const { message, body } = await service.update({ pk: id, data: req.body });
+			response({ res, message, body });
+		} catch (error) {
+			next(error);
+		}
+	}
+);
 
 router.delete('/:id', validationHandler(getUserSchema, 'params'), async (req, res, next) => {
 	const { id } = req.params;

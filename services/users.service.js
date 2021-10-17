@@ -22,6 +22,12 @@ class UsersService {
 	async login() {
 		return true;
 	}
+	async update({ pk, data = {} }) {
+		const response = await models.User.findByPk(pk);
+		if (!response) throw new boom.notFound('user not found');
+		await response.update(data);
+		return { message: `user with pk ${pk} updated`, body: response };
+	}
 	async remove(pk) {
 		const response = await models.User.findByPk(pk);
 		if (!response) throw new boom.notFound('user not found');
