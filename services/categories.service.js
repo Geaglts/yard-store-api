@@ -10,7 +10,7 @@ class CategoriesService {
 		return { message: 'categories', body: categories };
 	}
 	async findOne({ id }) {
-		const category = await this.table.findByPk(id, { includes: ['products'] });
+		const category = await this.table.findByPk(id, { include: ['products'] });
 		if (!category) throw boom.notFound('category not found');
 		return { message: 'category', body: category };
 	}
