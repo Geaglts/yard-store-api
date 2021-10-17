@@ -17,9 +17,10 @@ const CategorySchema = {
 	image: {
 		type: DataTypes.STRING,
 		allowNull: false,
+		defaultValue: 'https://dummyimage.com/100x100/6779a1/ffffff',
 	},
 	createdAt: {
-		type: DataTypes.STRING,
+		type: DataTypes.DATE,
 		field: 'created_at',
 		allowNull: false,
 		defaultValue: Sequelize.NOW,
@@ -27,7 +28,9 @@ const CategorySchema = {
 };
 
 class Category extends Model {
-	static associate() {}
+	static associate(models) {
+		this.hasMany(models.Product, { as: 'products', foreignKey: 'categoryId' });
+	}
 
 	static config(sequelize) {
 		return {
