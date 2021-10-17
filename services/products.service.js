@@ -1,62 +1,39 @@
-const faker = require('faker');
 const boom = require('@hapi/boom');
+const { models } = require('../lib/sequelize');
 
 class ProductsService {
 	constructor() {
-		this.products = [];
-		this.generate();
+		this.table = models.Product;
 	}
-	generate() {
-		const limit = 1;
-		for (let index = 0; index < limit; index++) {
-			this.products.push({
-				id: faker.datatype.uuid(),
-				name: faker.commerce.productName(),
-				price: parseInt(faker.commerce.price()),
-				image: faker.image.imageUrl(),
-			});
-		}
-	}
-	async create(product) {
-		const newProduct = {
-			id: faker.datatype.uuid(),
-			...product,
-		};
-		this.products.push(newProduct);
-		return newProduct;
-	}
+
 	async find() {
-		return new Promise((resolve, reject) => {
-			setTimeout(() => {
-				resolve(this.products);
-			}, 3000);
-		});
+		const products = await this.table.findAll();
+		return { message: 'products', body: products };
 	}
-	async findOne(id) {
-		const product = this.products.find((product) => {
-			return (product.id = id);
-		});
-		if (!product) throw boom.notFound('Product not found');
-		return product;
+
+	async findOne({ id }) {
+		const product = await this.table.findByPk(id, { include: ['category'] });
+		if (!product) throw boom.notFound('product not found');
+		return { message: 'product', body: product };
 	}
-	async update(id, updatedFields) {
-		const index = this.products.findIndex(({ id: productId }) => {
-			return productId === id;
-		});
-		if (index === -1) throw boom.notFound('Product not found');
-		this.products[index] = {
-			...this.products[index],
-			...updatedFields,
-		};
-		return this.products[index];
+
+	async create({ product }) {
+		const newProduct = await this.table.create(product);
+		return { message: 'product added', body: newProduct };
 	}
-	async delete(id) {
-		const index = this.products.findIndex(({ id: productId }) => {
-			return productId === id;
-		});
-		if (index === -1) throw boom.notFound('Product not found');
-		this.products.splice(index, 1);
-		return id;
+
+	async update({ id, updatedFields }) {
+		const product = await this.table.findByPk(id);
+		if (!product) throw boom.notFound('product not found');
+		await product.update(updatedFields);
+		return { message: 'updated product', body: product };
+	}
+
+	async delete({ id }) {
+		const product = await this.table.findByPk(id);
+		if (!product) throw boom.notFound('product not found');
+		await product.destroy();
+		return { message: 'deleted product', body: id };
 	}
 }
 

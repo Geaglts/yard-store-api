@@ -1,5 +1,7 @@
 const { Router } = require('express');
 const ProductsService = require('../../services/products.service');
+const response = require('../../utils/response');
+
 const validationHandler = require('../../middlewares/validation.handler');
 const {
 	getProductSchema,
@@ -10,25 +12,30 @@ const {
 const router = Router();
 const service = new ProductsService();
 
-router.get('/', async (req, res) => {
-	const products = await service.find();
-	res.status(200).json({ products });
+router.get('/', async (req, res, next) => {
+	try {
+		const output = await service.find();
+		response({ res, ...output });
+	} catch (error) {
+		next(error);
+	}
 });
 
-router.post('/', validationHandler(createProductSchema), async (req, res) => {
-	const { body } = req;
-	const newProduct = await service.create(body);
-	res.status(201).json({
-		message: 'created',
-		data: newProduct,
-	});
+router.post('/', validationHandler(createProductSchema), async (req, res, next) => {
+	const product = req.body;
+	try {
+		const output = await service.create({ product });
+		response({ res, ...output, status: 201 });
+	} catch (error) {
+		next(error);
+	}
 });
 
 router.get('/:id', validationHandler(getProductSchema, 'params'), async (req, res, next) => {
+	const { id } = req.params;
 	try {
-		const { id } = req.params;
-		const product = await service.findOne(id);
-		res.status(200).json({ product });
+		const output = await service.findOne({ id });
+		response({ res, ...output });
 	} catch (error) {
 		next(error);
 	}
@@ -38,36 +45,30 @@ router.patch(
 	'/:id',
 	validationHandler(getProductSchema, 'params'),
 	validationHandler(updateProductSchema),
-	async (req, res) => {
+	async (req, res, next) => {
+		const { id } = req.params;
+		const updatedFields = req.body;
 		try {
-			const { id } = req.params;
-			const { body } = req;
-			const updatedProduct = await service.update(id, body);
-			res.status(200).json({
-				message: 'updated',
-				data: updatedProduct,
-			});
+			const output = await service.update({ id, updatedFields });
+			response({ res, ...output });
 		} catch (error) {
-			res.status(404).json({
-				message: error.message,
-			});
+			next(error);
 		}
 	}
 );
 
-router.delete('/:id', validationHandler(getProductSchema, 'params'), async (req, res) => {
-	try {
+router.delete(
+	'/:id',
+	validationHandler(getProductSchema, 'params'),
+	async (req, res, next) => {
 		const { id } = req.params;
-		await service.delete(id);
-		res.status(200).json({
-			message: 'deleted',
-			id,
-		});
-	} catch (error) {
-		res.status(404).json({
-			message: error.message,
-		});
+		try {
+			const output = await service.delete({ id });
+			response({ res, ...output });
+		} catch (error) {
+			next(error);
+		}
 	}
-});
+);
 
 module.exports = router;
