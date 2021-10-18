@@ -10,7 +10,10 @@ class OrdersService {
 		return { message: 'orders', body: orders };
 	}
 	async findOne({ id }) {
-		const order = await this.table.findByPk(id, { include: ['customer'] });
+		const order = await this.table.findByPk(id, {
+			// asociacion anidada
+			include: [{ association: 'customer', include: ['user'] }],
+		});
 		if (!order) throw boom.notFound('order not found');
 		return { message: 'order', body: order };
 	}
