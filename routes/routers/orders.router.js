@@ -1,39 +1,67 @@
-const { Router } = require('express');
+const { Router, response } = require('express');
 const OrdersService = require('../../services/orders.service');
-
 const reponse = require('../../utils/response');
+
+const validationHandler = require('../../middlewares/validation.handler');
+const {
+	getOrderSchema,
+	updateOrderSchema,
+	createOrderSchema,
+} = require('../../schemas/order.schema');
 
 const router = Router();
 const service = new OrdersService();
 
 router.get('/', async (req, res, next) => {
 	try {
-		const data = await service.find();
-		reponse({ res, body: data });
+		const output = await service.find();
+		reponse({ res, ...output });
 	} catch (error) {
 		next(error);
 	}
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', validationHandler(createOrderSchema), async (req, res, next) => {
+	const order = req.body;
 	try {
-		reponse({ res, message: 'creado correctamente', status: 201 });
+		const output = await service.create({ order });
+		reponse({ res, ...output, status: 201 });
 	} catch (error) {
 		next(error);
 	}
 });
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', validationHandler(getOrderSchema, 'params'), async (req, res, next) => {
+	const { id } = req.params;
 	try {
-		reponse({ res, body: [] });
+		const output = await service.findOne({ id });
+		reponse({ res, ...output });
 	} catch (error) {
 		next(error);
 	}
 });
 
-router.delete('/:id', async (req, res, next) => {
+router.patch(
+	'/:id',
+	validationHandler(getOrderSchema, 'params'),
+	validationHandler(updateOrderSchema),
+	async (req, res, next) => {
+		const { id } = req.params;
+		const updatedFields = req.body;
+		try {
+			const output = await service.update({ id, updatedFields });
+			response({ res, ...output });
+		} catch (error) {
+			next(error);
+		}
+	}
+);
+
+router.delete('/:id', validationHandler(getOrderSchema, 'params'), async (req, res, next) => {
+	const { id } = req.params;
 	try {
-		reponse({ res, message: 'eliminado correctamente' });
+		const output = await service.delete({ id });
+		reponse({ res, ...output });
 	} catch (error) {
 		next(error);
 	}
