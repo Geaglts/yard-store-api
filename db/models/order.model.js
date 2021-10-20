@@ -28,6 +28,17 @@ const OrderSchema = {
 		onUpdate: 'CASCADE',
 		onDelete: 'SET NULL',
 	},
+	total: {
+		type: DataTypes.VIRTUAL,
+		get() {
+			if (this.items.length > 0) {
+				return this.items.reduce((total, product) => {
+					return total + product.price * product.OrderProduct.amount;
+				}, 0);
+			}
+			return 0;
+		},
+	},
 };
 
 class Order extends Model {
