@@ -6,9 +6,27 @@ class ProductsService {
 		this.table = models.Product;
 	}
 
-	async find() {
-		const products = await this.table.findAll();
-		return { message: 'products', body: products };
+	async find(query) {
+		const totalProducts = await this.table.count();
+		const options = {};
+		const { limit, page } = query;
+		const pagination = { totalProducts: totalProducts };
+		if (limit && page && page > 0) {
+			const totalPages = Math.ceil(totalProducts / limit);
+			options.limit = limit;
+			options.offset = (page > 1 ? page - 1 : 0) * limit;
+			pagination.products = parseInt(limit);
+			pagination.page = parseInt(page);
+			pagination.totalPages = totalPages;
+		}
+		const products = await this.table.findAll(options);
+		return {
+			message: 'products',
+			body: {
+				pagination,
+				data: products,
+			},
+		};
 	}
 
 	async findOne({ id }) {
