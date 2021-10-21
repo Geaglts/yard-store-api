@@ -1,4 +1,5 @@
 const boom = require('@hapi/boom');
+const { Op } = require('sequelize');
 const { models } = require('../lib/sequelize');
 
 class ProductsService {
@@ -8,7 +9,7 @@ class ProductsService {
 
 	async find(query) {
 		const totalProducts = await this.table.count();
-		const options = {};
+		const options = { include: ['category'], where: {} };
 		const { limit, page } = query;
 		const pagination = { totalProducts: totalProducts };
 		if (limit && page && page > 0) {
@@ -19,7 +20,26 @@ class ProductsService {
 			pagination.page = parseInt(page);
 			pagination.totalPages = totalPages;
 		}
+
+		const { price } = query;
+		if (price) {
+			options.where.price = price;
+		}
+
+		const { price_min, price_max } = query;
+		if (price_min && price_max) {
+			options.where.price = {
+				[Op.gte]: price_min,
+				[Op.lte]: price_max,
+			};
+		}
+
 		const products = await this.table.findAll(options);
+
+		if (price_min && price_max) {
+			pagination.products = products.length;
+		}
+
 		return {
 			message: 'products',
 			body: {
