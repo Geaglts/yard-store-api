@@ -1,16 +1,17 @@
 const { config } = require('../config/config');
 
-const USER = encodeURIComponent(config.pgUser);
-const PASSWORD = encodeURIComponent(config.pgPassword);
-const URI = `postgres://${USER}:${PASSWORD}@${config.pgHost}:${config.pgPort}/${config.pgDatabase}`;
-
 module.exports = {
 	development: {
-		url: URI,
+		url: config.databaseUrl,
 		dialect: 'postgres',
 	},
 	production: {
-		url: URI,
+		url: config.databaseUrl,
 		dialect: 'postgres',
+		dialectOptions: {
+			ssl: {
+				rejectUnauthorized: false,
+			},
+		},
 	},
 };
