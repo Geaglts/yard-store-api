@@ -2,6 +2,7 @@ const { Router } = require('express');
 const response = require('../../utils/response');
 const CategoriesService = require('../../services/categories.service');
 
+const { checkApiKey } = require('../../middlewares/auth.handler');
 const validationHandler = require('../../middlewares/validation.handler');
 const {
 	getCategorySchema,
@@ -12,7 +13,7 @@ const {
 const router = Router();
 const service = new CategoriesService();
 
-router.get('/', async (req, res, next) => {
+router.get('/', checkApiKey, async (req, res, next) => {
 	try {
 		const output = await service.find();
 		response({ res, ...output });
