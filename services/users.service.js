@@ -15,6 +15,11 @@ class UsersService {
 		if (!response) throw new boom.notFound('user not found');
 		return response;
 	}
+	async findByEmail(email) {
+		const response = await this.table.findOne({ where: { email } });
+		if (!response) throw new boom.notFound('user not found');
+		return response;
+	}
 	async register({ user }) {
 		const hashedUser = await bcrypt.hash(user.password, 10);
 		user.password = hashedUser;

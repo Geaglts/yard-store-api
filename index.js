@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const passport = require('passport');
 const app = express();
 const routerApi = require('./routes');
 const PORT = process.env.PORT || 3000;
@@ -8,6 +9,8 @@ const corsOptions = require('./cors');
 
 app.use(express.json());
 app.use(cors(corsOptions));
+app.use(passport.initialize());
+require('./utils/auth');
 
 app.get('/', (req, res) => {
 	res.send('Server andando.');
