@@ -27,9 +27,6 @@ class UsersService {
 		delete response.dataValues.password;
 		return { message: 'usuario creado correctamente', body: response };
 	}
-	async login() {
-		return true;
-	}
 	async update({ pk, data = {} }) {
 		const response = await this.table.findByPk(pk);
 		if (!response) throw new boom.notFound('user not found');

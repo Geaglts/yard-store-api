@@ -31,15 +31,6 @@ router.post('/register', validationHandler(createUserSchema), async (req, res, n
 	}
 });
 
-router.post('/login', async (req, res, next) => {
-	try {
-		const data = await service.login();
-		response({ res, ...data, status: 201 });
-	} catch (error) {
-		next(error);
-	}
-});
-
 router.get('/:id', validationHandler(getUserSchema, 'params'), async (req, res, next) => {
 	const { id } = req.params;
 	try {
