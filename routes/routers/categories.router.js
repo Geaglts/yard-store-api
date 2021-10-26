@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const passport = require('passport');
 const response = require('../../utils/response');
 const CategoriesService = require('../../services/categories.service');
 
@@ -22,15 +23,20 @@ router.get('/', checkApiKey, async (req, res, next) => {
 	}
 });
 
-router.post('/', validationHandler(createCategorySchema), async (req, res, next) => {
-	const category = req.body;
-	try {
-		const output = await service.create({ category });
-		response({ res, ...output, status: 201 });
-	} catch (error) {
-		next(error);
+router.post(
+	'/',
+	passport.authenticate('jwt', { session: false }),
+	validationHandler(createCategorySchema),
+	async (req, res, next) => {
+		const category = req.body;
+		try {
+			const output = await service.create({ category });
+			response({ res, ...output, status: 201 });
+		} catch (error) {
+			next(error);
+		}
 	}
-});
+);
 
 router.get('/:id', validationHandler(getCategorySchema, 'params'), async (req, res, next) => {
 	const { id } = req.params;
@@ -44,6 +50,7 @@ router.get('/:id', validationHandler(getCategorySchema, 'params'), async (req, r
 
 router.patch(
 	'/:id',
+	passport.authenticate('jwt', { session: false }),
 	validationHandler(getCategorySchema, 'params'),
 	validationHandler(updateCategorySchema),
 	async (req, res, next) => {
@@ -60,6 +67,7 @@ router.patch(
 
 router.delete(
 	'/:id',
+	passport.authenticate('jwt', { session: false }),
 	validationHandler(getCategorySchema, 'params'),
 	async (req, res, next) => {
 		const { id } = req.params;
