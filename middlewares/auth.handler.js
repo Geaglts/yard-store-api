@@ -6,8 +6,19 @@ function checkApiKey(req, res, next) {
 	if (apiKey === config.apiKey) {
 		next();
 	} else {
-		next(boom.unauthorized('unauthorized'));
+		next(boom.unauthorized());
 	}
 }
 
-module.exports = { checkApiKey };
+function checkRols(...roles) {
+	return (req, res, next) => {
+		const user = req.user;
+		if (roles.includes(user.role)) {
+			next();
+		} else {
+			next(boom.forbidden());
+		}
+	};
+}
+
+module.exports = { checkApiKey, checkRols };
