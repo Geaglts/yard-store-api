@@ -9,6 +9,18 @@ class OrdersService {
 		const orders = await this.table.findAll();
 		return { message: 'orders', body: orders };
 	}
+	async findByUser(userId) {
+		const customer = await models.Customer.findOne({
+			where: { '$user.id$': userId },
+			include: ['user'],
+		});
+		if (!customer) throw boom.notFound('customer not found');
+		const orders = await this.table.findAll({
+			where: { customerId: customer.id },
+			include: [{ association: 'items', through: { attributes: ['amount'] } }],
+		});
+		return { message: 'orders', body: orders };
+	}
 	async findOne({ id }) {
 		const order = await this.table.findByPk(id, {
 			// asociacion anidada
@@ -17,8 +29,13 @@ class OrdersService {
 		if (!order) throw boom.notFound('order not found');
 		return { message: 'order', body: order };
 	}
-	async create({ order }) {
-		const newOrder = await this.table.create(order);
+	async create({ userId }) {
+		const customer = await models.Customer.findOne({
+			where: { '$user.id$': userId },
+			include: ['user'],
+		});
+		if (!customer) throw boom.notFound('customer not found');
+		const newOrder = await this.table.create({ customerId: customer.id });
 		return { message: 'order added', body: newOrder };
 	}
 	async update({ id, updatedFields }) {

@@ -1,12 +1,13 @@
-const { Router, response } = require('express');
+const { Router } = require('express');
+const passport = require('passport');
 const OrdersService = require('../../services/orders.service');
 const reponse = require('../../utils/response');
 
+const { checkRols } = require('../../middlewares/auth.handler');
 const validationHandler = require('../../middlewares/validation.handler');
 const {
 	getOrderSchema,
 	updateOrderSchema,
-	createOrderSchema,
 	addProductSchema,
 } = require('../../schemas/order.schema');
 
@@ -22,15 +23,20 @@ router.get('/', async (req, res, next) => {
 	}
 });
 
-router.post('/', validationHandler(createOrderSchema), async (req, res, next) => {
-	const order = req.body;
-	try {
-		const output = await service.create({ order });
-		reponse({ res, ...output, status: 201 });
-	} catch (error) {
-		next(error);
+router.post(
+	'/',
+	passport.authenticate('jwt', { session: false }),
+	checkRols('admin', 'customer'),
+	async (req, res, next) => {
+		try {
+			const { sub } = req.user;
+			const output = await service.create({ userId: sub });
+			reponse({ res, ...output, status: 201 });
+		} catch (error) {
+			next(error);
+		}
 	}
-});
+);
 
 router.post('/add-product', validationHandler(addProductSchema), async (req, res, next) => {
 	const productOrder = req.body;
