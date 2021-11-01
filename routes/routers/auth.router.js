@@ -23,6 +23,15 @@ function authApi(app) {
 			}
 		}
 	);
+
+	router.post('/recovery', (req, res, next) => {
+		const { email } = req.body;
+		try {
+			response({ res, body: { email } });
+		} catch (error) {
+			next(error);
+		}
+	});
 }
 
 module.exports = authApi;
