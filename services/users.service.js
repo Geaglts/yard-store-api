@@ -17,7 +17,6 @@ class UsersService {
 	}
 	async findByEmail(email) {
 		const response = await this.table.findOne({ where: { email } });
-		if (!response) throw new boom.notFound('user not found');
 		return response;
 	}
 	async register({ user }) {

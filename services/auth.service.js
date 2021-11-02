@@ -47,7 +47,6 @@ class AuthService {
 			text: 'Hola',
 			html: '<h1>Hola</h1>',
 		});
-
 		return { message: 'email sended' };
 	}
 }
