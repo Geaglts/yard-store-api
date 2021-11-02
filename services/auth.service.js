@@ -32,12 +32,12 @@ class AuthService {
 		const user = await this.userService.findByEmail(email);
 		if (!user) throw boom.unauthorized();
 		const payload = { sub: user.id };
-		const token = jwt.sign(payload, config.jwtSecret);
+		const token = jwt.sign(payload, config.jwtRecoverySecret, { expiresIn: '15min' });
 		const link = `http://myfrontend.com/recovery?token=${token}`;
 		const mail = {
 			from: config.mailEmail,
 			to: user.email,
-			subject: 'Hola ✔',
+			subject: 'Recuperación de contraseña | YardSale',
 			html: `<code>Ingresa a este link => ${link}</code>`,
 		};
 		const response = await this.sendEmail(mail);
