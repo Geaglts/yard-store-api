@@ -28,7 +28,23 @@ class AuthService {
 		return { user, token };
 	}
 
-	async sendEmail(email) {
+	async sendRecovery(email) {
+		const user = await this.userService.findByEmail(email);
+		if (!user) throw boom.unauthorized();
+		const payload = { sub: user.id };
+		const token = jwt.sign(payload, config.jwtSecret);
+		const link = `http://myfrontend.com/recovery?token=${token}`;
+		const mail = {
+			from: config.mailEmail,
+			to: user.email,
+			subject: 'Hola ✔',
+			html: `<code>Ingresa a este link => ${link}</code>`,
+		};
+		const response = await this.sendEmail(mail);
+		return response;
+	}
+
+	async sendEmail(infomail) {
 		const user = await this.userService.findByEmail(email);
 		if (!user) throw boom.unauthorized();
 		let transporter = nodemailer.createTransport({
@@ -40,13 +56,7 @@ class AuthService {
 				pass: config.mailPassword,
 			},
 		});
-		await transporter.sendMail({
-			from: config.mailEmail,
-			to: user.email,
-			subject: 'Hola ✔',
-			text: 'Hola',
-			html: '<h1>Hola</h1>',
-		});
+		await transporter.sendMail(infomail);
 		return { message: 'email sended' };
 	}
 }

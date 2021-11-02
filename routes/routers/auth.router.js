@@ -29,7 +29,7 @@ function authApi(app) {
 	router.post('/recovery', validationHandler(recoverySchema), async (req, res, next) => {
 		const { email } = req.body;
 		try {
-			const { message } = await service.sendEmail(email);
+			const { message } = await service.sendRecovery(email);
 			response({ res, message });
 		} catch (error) {
 			next(error);
