@@ -1,9 +1,9 @@
 const { Router } = require('express');
 const passport = require('passport');
-const jwt = require('jsonwebtoken');
 const response = require('../../utils/response');
 
-const { config } = require('../../config/config');
+const AuthService = require('../../services/auth.service');
+const service = new AuthService();
 
 function authApi(app) {
 	const router = Router();
@@ -15,19 +15,19 @@ function authApi(app) {
 		async (req, res, next) => {
 			try {
 				const user = req.user;
-				const payload = { sub: user.id, role: user.role };
-				const token = jwt.sign(payload, config.jwtSecret);
-				response({ res, body: { user, token } });
+				const body = service.signToken(user);
+				response({ res, body });
 			} catch (error) {
 				next(error);
 			}
 		}
 	);
 
-	router.post('/recovery', (req, res, next) => {
+	router.post('/recovery', async (req, res, next) => {
 		const { email } = req.body;
 		try {
-			response({ res, body: { email } });
+			const { message } = await service.sendEmail(email);
+			response({ res, message });
 		} catch (error) {
 			next(error);
 		}
