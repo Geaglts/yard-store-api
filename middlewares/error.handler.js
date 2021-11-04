@@ -13,7 +13,7 @@ function errorHandler(err, req, res, next) {
 function boomErrorHandler(err, req, res, next) {
 	const { isBoom, output } = err;
 	if (isBoom) {
-		res.status(output.statusCode).json(output.payload);
+		return res.status(output.statusCode).json(output.payload);
 	}
 	next(err);
 }
