@@ -34,19 +34,18 @@ class AuthService {
 		const payload = { sub: user.id };
 		const token = jwt.sign(payload, config.jwtRecoverySecret, { expiresIn: '15min' });
 		const link = `http://myfrontend.com/recovery?token=${token}`;
+		await this.userService.update({ pk: user.id, data: { recoveryToken: token } });
 		const mail = {
 			from: config.mailEmail,
 			to: user.email,
 			subject: 'Recuperación de contraseña | YardSale',
-			html: `<code>Ingresa a este link => ${link}</code>`,
+			html: `<code>Ingresa al siguiente link => ${link}</code>`,
 		};
 		const response = await this.sendEmail(mail);
 		return response;
 	}
 
 	async sendEmail(infomail) {
-		const user = await this.userService.findByEmail(email);
-		if (!user) throw boom.unauthorized();
 		let transporter = nodemailer.createTransport({
 			host: 'smtp.gmail.com',
 			port: 465,
