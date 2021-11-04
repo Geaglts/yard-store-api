@@ -6,7 +6,7 @@ module.exports = {
 	up: async (queryInterface, Sequelize) => {
 		await queryInterface.addColumn(USER_TABLE, 'recovery_token', {
 			field: 'recovery_token',
-			allowNull: false,
+			allowNull: true,
 			type: Sequelize.DataTypes.STRING,
 		});
 	},
