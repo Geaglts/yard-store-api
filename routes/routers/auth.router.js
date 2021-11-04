@@ -3,7 +3,7 @@ const passport = require('passport');
 const response = require('../../utils/response');
 
 const validationHandler = require('../../middlewares/validation.handler');
-const { recoverySchema } = require('../../schemas/auth.schema');
+const { recoverySchema, changePasswordSchema } = require('../../schemas/auth.schema');
 
 const AuthService = require('../../services/auth.service');
 const service = new AuthService();
@@ -35,6 +35,20 @@ function authApi(app) {
 			next(error);
 		}
 	});
+
+	router.post(
+		'/change-password',
+		validationHandler(changePasswordSchema),
+		async (req, res, next) => {
+			const { token, newPassword } = req.body;
+			try {
+				const { message } = await service.changePassword({ token, newPassword });
+				response({ res, message });
+			} catch (error) {
+				next(error);
+			}
+		}
+	);
 }
 
 module.exports = authApi;
